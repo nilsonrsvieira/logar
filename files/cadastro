@@ -1,0 +1,28 @@
+#!/bin/bash
+
+function FormCadastro () {
+    dados=$(zenity --forms \
+                   --title="Cadastro" --text="Cadastro de Servidor" \
+                   --add-entry="Servidor: " --add-entry="IP: " \
+                   --add-entry="Domínio: " --add-password="Senha: " \
+                   --separator=";")
+
+if [ $? -eq 1 ]; then exit 1; fi;
+ 
+    IFS=";";
+ 
+    dados=( ${dados} );
+ 
+    if [[ -z ${dados[1]} ]] || [[ -z ${dados[2]} ]]
+    then
+        zenity --question --text="\nVocê não preencheu um ou mais campos!\n\nDeseja tentar novamente?" && FormCadastro;
+    elif [[ -z ${dados[3]} || -z ${dados[4]} ]] || [[ ${dados[3]} != ${dados[4]} ]]
+    then
+        zenity --question --text="\nAs senhas não conferem!\n\nDeseja tentar novamente?" && FormCadastro;
+    else
+        echo "$(date) FormCadastro: dados recebidos: ${dados[@]}";
+        zenity --info --text="\n${dados[1]} ${dados[2]}\n\nCadastrado com sucesso!";
+    fi
+}
+
+FormCadastro;
